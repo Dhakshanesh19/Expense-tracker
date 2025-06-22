@@ -18,6 +18,7 @@ const EXPENSES=[{
 function ExpenseContainer(){
     const [expenses,setExpense] = useState(EXPENSES);
     const [itemToEdit,setItemToEdit] = useState(null)
+    console.log("ITEM TO EDIT : ",itemToEdit)
     const addExpense=(title,amount)=>{
         setExpense(
             [
@@ -32,21 +33,30 @@ function ExpenseContainer(){
 const deleteExpenses = (id) => {
     setExpense(expenses.filter(exp=>exp.id != id))
 }
-const updateExpense = (id, newTitle) => {
-    setExpense(expenses.map(exp => exp.id === id ? { ...exp, title: newTitle } : exp));
-  }
+
+const editExpense = (id,title,amount) =>{
+    setExpense(expenses.map((exp)=>{
+        if(exp.id == id){
+            return {id,title,amount};
+        }
+        return exp;
+    })
+)
+    setItemToEdit(null)
+}
   
-    return(
+return (
     <>
-    <div className="expense-container">
-        <h1>EXPENSE TRACKER</h1>
-        <BalanceContainer expenses={expenses} />
-        <History expenses={expenses} deleteExpenses={deleteExpenses} updateExpense={updateExpense}/>
-        <Expenseform addExpense={addExpense}/>
-    </div>
-    
+        <div className="expense-container">
+            <h1>EXPENSE TRACKER</h1>
+            <BalanceContainer expenses={expenses} />
+            <Expenseform addExpense={addExpense} itemToEdit={itemToEdit} updateExpense={editExpense} setItemToEdit={setItemToEdit}/>
+            <History expenses={expenses} deleteExpenses={deleteExpenses} setItemToEdit={setItemToEdit} />
+
+        </div>
     </>
-    );
+);
+
 }
 
 export default ExpenseContainer;

@@ -2,8 +2,7 @@ import React from 'react'
 import Expenseitem from './Expenseitem'
 
 export default function History(props) {
-    const { expenses } = props
-    const { deleteExpenses,updateExpense } = props;  
+    const { expenses, deleteExpenses, updateExpense, setItemToEdit } = props;
 
 
     return (
@@ -12,7 +11,7 @@ export default function History(props) {
             {expenses.map((expense) => {
         return (
         <Expenseitem key={expense.id} id={expense.id} title={expense.title} amount={expense.amount} deleteExpense={props.deleteExpenses} 
-        updateExpense={updateExpense}        />
+        updateExpense={updateExpense}    setItemToEdit={setItemToEdit} expense={expense}    />
                 )
             })}
         </>

@@ -2,7 +2,8 @@ import React from 'react';
 import  { useState } from 'react';
 
 
-export default function Expenseitem({ id, title, amount, deleteExpense }) {
+export default function Expenseitem(props) {
+  const { id, title, amount, deleteExpense }=props
   const type = amount > 0 ? "income" : "expense";
   const [isUpdating, setIsUpdating] = useState(false);  
 
@@ -11,7 +12,7 @@ export default function Expenseitem({ id, title, amount, deleteExpense }) {
 }
 
   function handleUpdate() {
-    setIsUpdating(true);
+    props.setItemToEdit(props.expense);
   }
 
   function handleUpdateChange(e) {
