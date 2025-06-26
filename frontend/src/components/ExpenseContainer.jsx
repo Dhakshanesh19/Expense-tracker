@@ -6,19 +6,13 @@ import BalanceContainer from "./BalanceContainer";
 function ExpenseContainer() {
   const [expenses, setExpense] = useState([]);
   const [itemToEdit, setItemToEdit] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch expenses from backend
   const fetchExpenses = async () => {
     try {
       const response = await fetch('http://localhost:3000/expense');
       const data = await response.json();
-      setExpense(data); // assumes data is an array of { _id, title, amount }
-    } catch (error) {
-      console.error("Error fetching expenses:", error);
-    } finally {
-      setLoading(false);
-    }
+      setExpense(data);
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -36,32 +30,43 @@ function ExpenseContainer() {
       });
 
       if (response.ok) {
-        const newItem = await response.json(); // e.g., { _id, title, amount }
+        const newItem = await response.json();
         setExpense(prev => [...prev, newItem]);
-      } else {
-        console.error("Failed to add expense");
       }
-    } catch (error) {
-      console.error("Error adding expense:", error);
-    }
+    } catch (error) {}
   };
 
-  // 🧹 Locally delete from state (you can also call backend DELETE if needed)
-  const deleteExpenses = (id) => {
-    setExpense(expenses.filter(exp => exp._id !== id));
-  };
+  const deleteExpenses = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3000/expense/${id}`, {
+        method: 'DELETE',
+      });
 
-  const editExpense = (id, title, amount) => {
-    setExpense(expenses.map((exp) => {
-      if (exp._id === id) {
-        return { _id: id, title, amount }; // keep `_id` consistent
+      if (response.ok) {
+        setExpense(prev => prev.filter(exp => exp._id !== id));
       }
-      return exp;
-    }));
-    setItemToEdit(null);
+    } catch (error) {}
   };
 
-  if (loading) return <div>Loading expenses...</div>;
+  const editExpense = async (id, title, amount) => {
+    try {
+      const response = await fetch(`http://localhost:3000/expense/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, amount }),
+      });
+
+      if (response.ok) {
+        const updatedItem = await response.json();
+        setExpense(prev =>
+          prev.map(exp => (exp._id === id ? updatedItem : exp))
+        );
+        setItemToEdit(null);
+      }
+    } catch (error) {}
+  };
 
   return (
     <div className="expense-container">
@@ -76,6 +81,7 @@ function ExpenseContainer() {
       <History
         expenses={expenses}
         deleteExpenses={deleteExpenses}
+        updateExpense={editExpense}
         setItemToEdit={setItemToEdit}
       />
     </div>
