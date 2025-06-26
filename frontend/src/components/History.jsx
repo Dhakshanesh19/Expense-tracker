@@ -1,19 +1,22 @@
-import React from 'react'
-import Expenseitem from './Expenseitem'
+import React from 'react';
+import Expenseitem from './Expenseitem';
 
-export default function History(props) {
-    const { expenses, deleteExpenses, updateExpense, setItemToEdit } = props;
-
-
+export default function History({ expenses, deleteExpenses, updateExpense, setItemToEdit }) {
     return (
         <>
             <div className='history'>History</div>
-            {expenses.map((expense) => {
-        return (
-        <Expenseitem key={expense.id} id={expense.id} title={expense.title} amount={expense.amount} deleteExpense={props.deleteExpenses} 
-        updateExpense={updateExpense}    setItemToEdit={setItemToEdit} expense={expense}    />
-                )
-            })}
+            {expenses.map((expense) => (
+                <Expenseitem
+                    key={expense._id}
+                    id={expense._id}
+                    title={expense.title}
+                    amount={expense.amount}
+                    deleteExpense={deleteExpenses}
+                    updateExpense={updateExpense}
+                    setItemToEdit={setItemToEdit}
+                    expense={expense}
+                />
+            ))}
         </>
-    )
+    );
 }

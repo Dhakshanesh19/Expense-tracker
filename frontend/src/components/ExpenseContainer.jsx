@@ -1,62 +1,85 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import History from "./History";
 import { Expenseform } from "./Expenseform";
 import BalanceContainer from "./BalanceContainer";
-import { v4 as uuid } from 'uuid';
-const EXPENSES=[{
-    id:uuid(),
-    title:"EXPENSE1",
-    amount:-10
-},
-{
-    id:uuid(),
-    title:"EXPENSE2",
-    amount:20
-}
-];
 
-function ExpenseContainer(){
-    const [expenses,setExpense] = useState(EXPENSES);
-    const [itemToEdit,setItemToEdit] = useState(null)
-    console.log("ITEM TO EDIT : ",itemToEdit)
-    const addExpense=(title,amount)=>{
-        setExpense(
-            [
-                ...expenses,{
-                    id:uuid(),
-                    title,
-                    amount
-                }
-            ]
-        )
+function ExpenseContainer() {
+  const [expenses, setExpense] = useState([]);
+  const [itemToEdit, setItemToEdit] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch expenses from backend
+  const fetchExpenses = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/expense');
+      const data = await response.json();
+      setExpense(data); // assumes data is an array of { _id, title, amount }
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    } finally {
+      setLoading(false);
     }
-const deleteExpenses = (id) => {
-    setExpense(expenses.filter(exp=>exp.id != id))
-}
+  };
 
-const editExpense = (id,title,amount) =>{
-    setExpense(expenses.map((exp)=>{
-        if(exp.id == id){
-            return {id,title,amount};
-        }
-        return exp;
-    })
-)
-    setItemToEdit(null)
-}
-  
-return (
-    <>
-        <div className="expense-container">
-            <h1>EXPENSE TRACKER</h1>
-            <BalanceContainer expenses={expenses} />
-            <Expenseform addExpense={addExpense} itemToEdit={itemToEdit} updateExpense={editExpense} setItemToEdit={setItemToEdit}/>
-            <History expenses={expenses} deleteExpenses={deleteExpenses} setItemToEdit={setItemToEdit} />
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
-        </div>
-    </>
-);
+  const addExpense = async (title, amount) => {
+    try {
+      const response = await fetch('http://localhost:3000/expense', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, amount }),
+      });
 
+      if (response.ok) {
+        const newItem = await response.json(); // e.g., { _id, title, amount }
+        setExpense(prev => [...prev, newItem]);
+      } else {
+        console.error("Failed to add expense");
+      }
+    } catch (error) {
+      console.error("Error adding expense:", error);
+    }
+  };
+
+  // 🧹 Locally delete from state (you can also call backend DELETE if needed)
+  const deleteExpenses = (id) => {
+    setExpense(expenses.filter(exp => exp._id !== id));
+  };
+
+  const editExpense = (id, title, amount) => {
+    setExpense(expenses.map((exp) => {
+      if (exp._id === id) {
+        return { _id: id, title, amount }; // keep `_id` consistent
+      }
+      return exp;
+    }));
+    setItemToEdit(null);
+  };
+
+  if (loading) return <div>Loading expenses...</div>;
+
+  return (
+    <div className="expense-container">
+      <h1>EXPENSE TRACKER</h1>
+      <BalanceContainer expenses={expenses} />
+      <Expenseform
+        addExpense={addExpense}
+        itemToEdit={itemToEdit}
+        updateExpense={editExpense}
+        setItemToEdit={setItemToEdit}
+      />
+      <History
+        expenses={expenses}
+        deleteExpenses={deleteExpenses}
+        setItemToEdit={setItemToEdit}
+      />
+    </div>
+  );
 }
 
 export default ExpenseContainer;
