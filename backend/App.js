@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const PORT = 3000;
+const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const MONGO_URL = 'mongodb+srv://dhakshaneshr23cse:dhakshanesh@cluster0.c6iegky.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const MONGO_URL = 'mongodb+srv://dhakshaneshr23cse:dhakshanesh@cluster0.c6iegky.mongodb.net/expenseDB?retryWrites=true&w=majority&appName=Cluster0';
 
 mongoose.connect(MONGO_URL)
   .then(() => console.log(" Connected to MongoDB successfully!"))
@@ -78,6 +78,7 @@ app.delete('/expense/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 SERVER RUNNING ON PORT ${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
+

@@ -3,16 +3,20 @@ import History from "./History";
 import { Expenseform } from "./Expenseform";
 import BalanceContainer from "./BalanceContainer";
 
+const API = import.meta.env.VITE_API_URL;
+
 function ExpenseContainer() {
   const [expenses, setExpense] = useState([]);
   const [itemToEdit, setItemToEdit] = useState(null);
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch('http://localhost:3000/expense');
+      const response = await fetch(`${API}/expense`);
       const data = await response.json();
       setExpense(data);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
   };
 
   useEffect(() => {
@@ -21,7 +25,7 @@ function ExpenseContainer() {
 
   const addExpense = async (title, amount) => {
     try {
-      const response = await fetch('http://localhost:3000/expense', {
+      const response = await fetch(`${API}/expense`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,24 +37,28 @@ function ExpenseContainer() {
         const newItem = await response.json();
         setExpense(prev => [...prev, newItem]);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Add error:", error);
+    }
   };
 
   const deleteExpenses = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/expense/${id}`, {
+      const response = await fetch(`${API}/expense/${id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
         setExpense(prev => prev.filter(exp => exp._id !== id));
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
   };
 
   const editExpense = async (id, title, amount) => {
     try {
-      const response = await fetch(`http://localhost:3000/expense/${id}`, {
+      const response = await fetch(`${API}/expense/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +73,9 @@ function ExpenseContainer() {
         );
         setItemToEdit(null);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Edit error:", error);
+    }
   };
 
   return (

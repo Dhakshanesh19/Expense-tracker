@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"name": "To-Do List App",
+			"path": "../../../../To-Do List App"
+		},
+		{
+			"name": "Expense-tracker",
+			"path": "../../.."
+		},
+		{
+			"name": "Bhupie-project",
+			"path": "../../../../Bhupie-project"
+		},
+		{
+			"name": "backend",
+			"path": "../../../../backend"
+		},
+		{
+			"name": "Backend-Express",
+			"path": "../../../../Backend-Express"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Bhupie-project"
+	}
+}
